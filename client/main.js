@@ -32,9 +32,15 @@
 
   // theme toggle with persistence
   if (themeToggle) {
-    // apply saved theme
+    // apply saved theme; default to dark when no saved preference
     const saved = localStorage.getItem('collab:theme');
-    if (saved) document.body.setAttribute('data-theme', saved);
+    if (saved) {
+      document.body.setAttribute('data-theme', saved);
+    } else {
+      // default to dark mode
+      document.body.setAttribute('data-theme', 'dark');
+      localStorage.setItem('collab:theme', 'dark');
+    }
     themeToggle.addEventListener('click', () => {
       const cur = document.body.getAttribute('data-theme');
       const next = cur === 'dark' ? 'light' : 'dark';
@@ -116,14 +122,23 @@
 
   socket.on('init', (payload) => {
     // payload: {operations, users, you}
-    window.CanvasAPI.init(payload);
-    // populate user list
+    // If there are no other users connected, start with a clear canvas for a clean default.
     usersEl.innerHTML = '';
     usersMap.clear();
-    payload.users.forEach(u => {
-      usersMap.set(u.id, u);
-    });
+    payload.users.forEach(u => usersMap.set(u.id, u));
     renderUsers();
+    // If only this user is present, prefer a clean canvas rather than replaying old operations
+    if (!payload.users || payload.users.length <= 1) {
+      if (window.CanvasAPI && window.CanvasAPI.onClear) {
+        window.CanvasAPI.onClear();
+      } else if (window.CanvasAPI && window.CanvasAPI.init) {
+        // fallback: initialize with empty operations
+        window.CanvasAPI.init({ operations: [] });
+      }
+    } else {
+      // multiple users — load shared state
+      window.CanvasAPI.init(payload);
+    }
   });
 
   socket.on('user-joined', (u) => {

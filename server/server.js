@@ -12,6 +12,19 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.static(path.join(__dirname, '..', 'client')));
 
+// convenience route to clear the shared canvas (useful for dev/testing)
+app.get('/clear', (req, res) => {
+  try {
+    drawingState.clear();
+    io.emit('clear');
+    console.log('Canvas cleared via /clear endpoint');
+    return res.json({ ok: true, cleared: true });
+  } catch (err) {
+    console.error('Error clearing canvas', err);
+    return res.status(500).json({ ok: false, error: String(err) });
+  }
+});
+
 // simple user tracking
 const users = new Map(); // socketId -> {id, name, color}
 
