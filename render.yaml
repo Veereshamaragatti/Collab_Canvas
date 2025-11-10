@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: collaborative-canvas
+    env: node
+    plan: free
+    branch: main
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+    healthCheckPath: /
+
+# Notes:
+# - Replace `branch` with the branch you will deploy (e.g. `main` or `master`).
+# - This manifest is optional for Render; you can also configure via the Render UI.

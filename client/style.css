@@ -1,0 +1,84 @@
+/* Modernized UI styling for the collaborative canvas */
+* { box-sizing: border-box; }
+:root{
+	--bg-1: linear-gradient(180deg,#f7fbff 0%, #ffffff 40%);
+	--accent: #2aa4a8;
+	--muted: #6b7280;
+	--glass: rgba(255,255,255,0.6);
+}
+html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;}
+body{display:flex;flex-direction:column;background:var(--bg-1);color:#0f172a}
+
+/* Topbar */
+#topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;background:rgba(255,255,255,0.7);backdrop-filter: blur(6px);box-shadow:0 6px 18px rgba(12,18,30,0.06);border-bottom:1px solid rgba(15,23,42,0.04)}
+#brand{display:flex;align-items:center;gap:12px}
+.logo{font-weight:700;color:#0f172a;font-size:16px;letter-spacing:0.2px}
+.logo span{color:var(--accent);margin-left:6px}
+
+/* 3D decoration */
+#decor-3d{width:46px;height:46px;display:flex;align-items:center;justify-content:center}
+.cube{width:36px;height:36px;position:relative;transform-style:preserve-3d;animation:spin 8s linear infinite}
+.cube .face{position:absolute;width:36px;height:36px;left:0;top:0;opacity:0.95;border-radius:6px}
+.cube .f1{background:linear-gradient(180deg,#ff8a65,#ff5c5c);transform:translateZ(18px)}
+.cube .f2{background:linear-gradient(180deg,#ffd54f,#ffb300);transform:rotateY(90deg) translateZ(18px)}
+.cube .f3{background:linear-gradient(180deg,#81c784,#4caf50);transform:rotateY(180deg) translateZ(18px)}
+.cube .f4{background:linear-gradient(180deg,#4fc3f7,#0288d1);transform:rotateY(-90deg) translateZ(18px)}
+.cube .f5{background:linear-gradient(180deg,#b39ddb,#7e57c2);transform:rotateX(90deg) translateZ(18px)}
+.cube .f6{background:linear-gradient(180deg,#ffcc80,#ff8a65);transform:rotateX(-90deg) translateZ(18px)}
+@keyframes spin{from{transform:rotateX(18deg) rotateY(0deg)}to{transform:rotateX(18deg) rotateY(360deg)}}
+
+/* Tools area */
+#tools{display:flex;align-items:center;gap:12px}
+/* tool groups */
+#tools{display:flex;align-items:center;gap:12px;min-width:320px}
+.tool-group{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--muted);background:rgba(255,255,255,0.8);padding:6px 8px;border-radius:10px;border:1px solid rgba(15,23,42,0.03)}
+select,input[type=color]{height:36px;padding:6px 10px;border-radius:8px;border:1px solid rgba(15,23,42,0.06);background:#fff;box-shadow:0 1px 0 rgba(255,255,255,0.6) inset}
+input[type=range]{width:140px}
+
+/* icon button */
+.icon-btn{display:inline-flex;align-items:center;justify-content:center;height:36px;width:36px;border-radius:10px;border:none;background:linear-gradient(180deg,#ffffff,#f5f7fa);box-shadow:0 6px 14px rgba(2,6,23,0.06);cursor:pointer;color:var(--muted);transition:transform .12s ease,box-shadow .12s,background .12s}
+.icon-btn svg{display:block}
+.icon-btn:hover{transform:translateY(-3px);box-shadow:0 18px 40px rgba(2,6,23,0.08);color:#0f172a}
+.spacer{flex:1}
+
+/* Users list */
+#users{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin-left:12px}
+
+/* Canvas area and frame */
+#canvas-wrap{position:relative;flex:1;margin:16px;border-radius:14px;overflow:hidden;background:linear-gradient(180deg,#ffffff, #fbfdff);box-shadow:0 14px 40px rgba(2,6,23,0.06);}
+#canvas{width:100%;height:100%;display:block;background:transparent}
+#cursors{position:absolute;left:0;top:0;right:0;bottom:0;pointer-events:none}
+.cursor{position:absolute;transform:translate(-50%,-50%);background:transparent;transition:transform .08s linear}
+.cursor .dot{width:14px;height:14px;border-radius:50%;opacity:0.95;box-shadow:0 4px 10px rgba(2,6,23,0.12)}
+.cursor .label{font-size:12px;background:rgba(255,255,255,0.9);padding:4px 8px;border-radius:8px;margin-top:6px;display:inline-block;color:#0f172a;box-shadow:0 6px 16px rgba(2,6,23,0.06)}
+
+/* Users area (compact pills) */
+#users div{background:rgba(255,255,255,0.85);padding:6px 10px;border-radius:999px;display:inline-flex;align-items:center;gap:8px;color:#0f172a;box-shadow:0 6px 14px rgba(2,6,23,0.04)}
+
+/* small responsive tweaks */
+@media (max-width:800px){
+	.logo{font-size:14px}
+	#tools{gap:8px}
+	#decor-3d{display:none}
+}
+
+/* custom range thumb (modern) */
+input[type=range]{-webkit-appearance:none;background:transparent}
+input[type=range]::-webkit-slider-runnable-track{height:6px;background:linear-gradient(90deg,var(--accent),#0b8b8d);border-radius:6px}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;margin-top:-6px;width:18px;height:18px;border-radius:50%;background:#fff;border:4px solid var(--accent);box-shadow:0 6px 14px rgba(2,6,23,0.12)}
+input[type=range]:focus::-webkit-slider-thumb{box-shadow:0 10px 24px rgba(42,164,168,0.18)}
+
+/* Dark theme support */
+body[data-theme='dark']{--bg-1:linear-gradient(180deg,#071226 0%, #061425 40%);color:#e6eef6}
+body[data-theme='dark'] #topbar{background:rgba(2,6,23,0.6);border-bottom:1px solid rgba(255,255,255,0.03)}
+body[data-theme='dark'] .tool-group{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.03)}
+body[data-theme='dark'] .icon-btn{background:linear-gradient(180deg,#071226,#081830);box-shadow:0 8px 24px rgba(2,6,23,0.6);color:#cfeffd}
+body[data-theme='dark'] .logo{color:#cfeffd}
+body[data-theme='dark'] .logo span{color:#66e0e3}
+
+
+/* nice little focus states */
+select:focus,input[type=color]:focus,button:focus{outline:2px solid rgba(42,164,168,0.18);outline-offset:2px}
+
+/* footer / helper */
+.help{position:absolute;right:12px;bottom:12px;background:rgba(15,23,42,0.02);padding:6px 10px;border-radius:8px;font-size:12px;color:var(--muted)}
