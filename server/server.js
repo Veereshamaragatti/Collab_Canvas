@@ -66,6 +66,14 @@ io.on('connection', (socket) => {
 
   socket.on('stroke-points', (data) => {
     // data: {id, points}
+    // persist points into server state so history is complete
+    try {
+      if (data && data.id && Array.isArray(data.points) && data.points.length) {
+        drawingState.appendPoints(data.id, data.points);
+      }
+    } catch (err) {
+      console.error('Error appending points', err);
+    }
     // forward to others
     socket.broadcast.emit('stroke-points', { socketId: socket.id, ...data });
   });
@@ -77,6 +85,13 @@ io.on('connection', (socket) => {
 
   socket.on('stroke-end', (data) => {
     // finalize: contains id and final meta
+    try {
+      if (data && data.id) {
+        drawingState.updateOperation(data.id, data);
+      }
+    } catch (err) {
+      console.error('Error finalizing operation', err);
+    }
     io.emit('stroke-end', { socketId: socket.id, ...data });
   });
 

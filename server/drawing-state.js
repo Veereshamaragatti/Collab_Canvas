@@ -12,10 +12,32 @@ class DrawingState {
   addOperation(op) {
     // ensure op has id
     if (!op.id) op.id = uuidv4();
+    // ensure points array exists for strokes
+    if (op.type === 'stroke' && !Array.isArray(op.points)) op.points = [];
     this.operations.push(op);
     // new operation invalidates redo stack
     this.undone = [];
     return op.id;
+  }
+
+  // append points to an existing stroke operation
+  appendPoints(id, points) {
+    if (!id || !Array.isArray(points) || points.length === 0) return false;
+    const idx = this.operations.findIndex(o => o.id === id);
+    if (idx === -1) return false;
+    const op = this.operations[idx];
+    if (!Array.isArray(op.points)) op.points = [];
+    op.points.push(...points);
+    return true;
+  }
+
+  // merge/update operation metadata (used on stroke-end or shape finalization)
+  updateOperation(id, updates) {
+    if (!id || !updates) return false;
+    const idx = this.operations.findIndex(o => o.id === id || o.tempId === id);
+    if (idx === -1) return false;
+    this.operations[idx] = Object.assign({}, this.operations[idx], updates);
+    return true;
   }
 
   undo() {
