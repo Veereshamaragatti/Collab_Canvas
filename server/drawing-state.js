@@ -35,6 +35,11 @@ class DrawingState {
   getState() {
     return this.operations.slice();
   }
+
+  clear() {
+    this.operations = [];
+    this.undone = [];
+  }
 }
 
 module.exports = new DrawingState();

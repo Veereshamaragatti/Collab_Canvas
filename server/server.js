@@ -57,6 +57,11 @@ io.on('connection', (socket) => {
     socket.broadcast.emit('stroke-points', { socketId: socket.id, ...data });
   });
 
+  socket.on('clear', () => {
+    drawingState.clear();
+    io.emit('clear');
+  });
+
   socket.on('stroke-end', (data) => {
     // finalize: contains id and final meta
     io.emit('stroke-end', { socketId: socket.id, ...data });

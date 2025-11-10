@@ -24,8 +24,16 @@
       <div id="tools">
         <label class="tool-group">Tool:
           <select id="tool">
+            <option value="pointer">Pointer</option>
             <option value="brush">Brush</option>
+            <option value="line">Line</option>
+            <option value="arrow">Arrow</option>
+            <option value="rect">Rectangle</option>
+            <option value="ellipse">Ellipse</option>
+            <option value="text">Text</option>
+            <option value="image">Image</option>
             <option value="eraser">Eraser</option>
+            <option value="pan">Pan</option>
           </select>
         </label>
         <label class="tool-group">Color:
@@ -48,7 +56,29 @@
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
         </button>
       </div>
-      <div id="users"></div>
+      <div id="user-info">
+        <div id="online-count">Online: <strong id="online-num">0</strong></div>
+      </div>
+    </div>
+    <div id="users" aria-live="polite" class="users-list"></div>
+    <div id="toasts" aria-hidden="true"></div>
+    <div id="online-badge" title="Online users">
+      <span class="icon">👥</span>
+      <span id="online-num-badge">0</span>
+    </div>
+    <!-- Vertical toolbar -->
+    <div id="toolbar" aria-label="Tools palette">
+      <button class="tb-btn" data-tool="pointer" title="Pointer">✦</button>
+      <button class="tb-btn" data-tool="brush" title="Brush">🖊️</button>
+      <button class="tb-btn" data-tool="line" title="Line">/</button>
+      <button class="tb-btn" data-tool="arrow" title="Arrow">➡️</button>
+      <button class="tb-btn" data-tool="rect" title="Rectangle">▭</button>
+      <button class="tb-btn" data-tool="ellipse" title="Ellipse">◯</button>
+      <button class="tb-btn" data-tool="text" title="Text">T</button>
+      <button class="tb-btn" data-tool="image" title="Insert image">🖼️</button>
+      <button class="tb-btn" data-tool="eraser" title="Eraser">🧽</button>
+      <button class="tb-btn" id="pan-btn" data-tool="pan" title="Pan/Hand">✋</button>
+      <input id="image-upload" type="file" accept="image/*" style="display:none">
     </div>
     <div id="canvas-wrap">
       <canvas id="canvas"></canvas>

@@ -52,8 +52,11 @@ input[type=range]{width:140px}
 .cursor .dot{width:14px;height:14px;border-radius:50%;opacity:0.95;box-shadow:0 4px 10px rgba(2,6,23,0.12)}
 .cursor .label{font-size:12px;background:rgba(255,255,255,0.9);padding:4px 8px;border-radius:8px;margin-top:6px;display:inline-block;color:#0f172a;box-shadow:0 6px 16px rgba(2,6,23,0.06)}
 
-/* Users area (compact pills) */
-#users div{background:rgba(255,255,255,0.85);padding:6px 10px;border-radius:999px;display:inline-flex;align-items:center;gap:8px;color:#0f172a;box-shadow:0 6px 14px rgba(2,6,23,0.04)}
+/* Users list and pills */
+#users{display:flex;gap:8px;align-items:center;padding:8px 18px}
+.user-pill{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.9);box-shadow:0 6px 14px rgba(2,6,23,0.04);color:#0f172a}
+.user-dot{width:14px;height:14px;border-radius:50%;box-shadow:0 4px 8px rgba(2,6,23,0.08)}
+.user-name{font-size:13px}
 
 /* small responsive tweaks */
 @media (max-width:800px){
@@ -76,9 +79,28 @@ body[data-theme='dark'] .icon-btn{background:linear-gradient(180deg,#071226,#081
 body[data-theme='dark'] .logo{color:#cfeffd}
 body[data-theme='dark'] .logo span{color:#66e0e3}
 
+/* Left vertical toolbar */
+#toolbar{position:fixed;left:18px;top:120px;display:flex;flex-direction:column;gap:10px;z-index:60}
+.tb-btn{width:44px;height:44px;border-radius:10px;border:none;background:linear-gradient(180deg,#fff,#f3f5f9);box-shadow:0 8px 20px rgba(2,6,23,0.06);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;color:#0f172a}
+.tb-btn:hover{transform:translateY(-3px)}
+.tb-btn.active{background:linear-gradient(180deg,var(--accent),#0b8b8d);color:#fff;box-shadow:0 18px 40px rgba(10,60,60,0.12)}
+body[data-theme='dark'] .tb-btn{background:linear-gradient(180deg,#071226,#081830);color:#cfeffd}
+body[data-theme='dark'] .tb-btn.active{background:linear-gradient(180deg,#66e0e3,#2aa4a8);color:#042024}
+
 
 /* nice little focus states */
 select:focus,input[type=color]:focus,button:focus{outline:2px solid rgba(42,164,168,0.18);outline-offset:2px}
 
 /* footer / helper */
 .help{position:absolute;right:12px;bottom:12px;background:rgba(15,23,42,0.02);padding:6px 10px;border-radius:8px;font-size:12px;color:var(--muted)}
+
+/* online badge bottom-right */
+#online-badge{position:fixed;right:18px;bottom:18px;background:rgba(2,6,23,0.9);color:#fff;padding:8px 12px;border-radius:12px;display:flex;align-items:center;gap:8px;box-shadow:0 20px 50px rgba(2,6,23,0.4);z-index:40}
+#online-badge .icon{font-size:16px}
+#online-badge span{font-weight:600}
+
+/* toasts */
+#toasts{position:fixed;right:18px;top:84px;display:flex;flex-direction:column;gap:8px;z-index:50}
+.toast{background:rgba(255,255,255,0.95);padding:8px 12px;border-radius:10px;box-shadow:0 10px 30px rgba(2,6,23,0.08);transform:translateY(-8px) scale(.98);opacity:0;transition:all 260ms cubic-bezier(.2,.9,.2,1)}
+.toast.visible{transform:translateY(0) scale(1);opacity:1}
+
