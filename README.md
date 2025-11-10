@@ -68,7 +68,7 @@ git init
 git add .
 git commit -m "Initial collaborative canvas prototype"
 git branch -M main
-git remote add origin https://github.com/<your-org-or-username>/<repo-name>.git
+git remote add origin https://github.com/Veereshamaragatti/Collab_Canvas.git
 git push -u origin main
 ```
 
@@ -89,9 +89,7 @@ Notes:
 
 - Live demo: (add your deployed URL here after deploying to Render or another host)
 
-Example: https://collaborative-canvas.onrender.com
-
-Replace the above with your actual URL in the README once deployed.
+Example:collab-canvas-rakw.onrender.com/
 
 ---
 
