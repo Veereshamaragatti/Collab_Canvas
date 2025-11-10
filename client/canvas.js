@@ -167,6 +167,27 @@
       if (state && state.operations) state.operations.forEach(op => operations.push(op));
       redrawAll();
     },
+    sync(serverOps) {
+      // Smart sync: only add operations we don't have yet (based on id)
+      if (!Array.isArray(serverOps)) return;
+      let updated = false;
+      for (const serverOp of serverOps) {
+        const exists = operations.find(o => o.id === serverOp.id);
+        if (!exists) {
+          operations.push(serverOp);
+          updated = true;
+        } else {
+          // Update points if server has more (e.g., we missed some stroke-points messages)
+          if (serverOp.points && serverOp.points.length > (exists.points || []).length) {
+            exists.points = serverOp.points.slice();
+            updated = true;
+          }
+        }
+      }
+      if (updated) {
+        redrawAll();
+      }
+    },
     onStrokeStart(op) {
       // op with id. If this op references a client tempId, reconcile the local op
       // op may include `tempId` if the client sent one.
@@ -174,12 +195,18 @@
         const idx = operations.findIndex(o => o.id === op.tempId || o.tempId === op.tempId);
         if (idx !== -1) {
           // update local op's id to server id and remove temp flags
+          const oldId = operations[idx].id;
           operations[idx].id = op.id;
           delete operations[idx].tempId;
           delete operations[idx]._local;
           operations[idx].socketId = op.socketId || operations[idx].socketId;
           // ensure points array exists
           operations[idx].points = operations[idx].points || [];
+          // CRITICAL: if currentOp exists and matches this tempId, update its id reference
+          if (currentOp && (currentOp.id === oldId || currentOp.tempId === op.tempId)) {
+            currentOp.id = op.id;
+            delete currentOp.tempId;
+          }
           redrawAll();
           return;
         }
@@ -190,9 +217,13 @@
     },
     onStrokePoints(data) {
       // data: {id, points}
-      const op = operations.find(o => o.id === data.id);
+      let op = operations.find(o => o.id === data.id || o.tempId === data.id);
       if (op) {
-        op.points = op.points.concat(data.points);
+        op.points = (op.points || []).concat(data.points);
+      } else {
+        // If we haven't seen a start for this id yet (race), create a placeholder
+        const placeholder = { id: data.id, type: 'stroke', points: data.points.slice(), color: '#000', size: 4, _remote: true };
+        operations.push(placeholder);
       }
       redrawAll();
     },

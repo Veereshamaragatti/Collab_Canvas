@@ -60,6 +60,7 @@ io.on('connection', (socket) => {
     // create and store the operation header
     const base = Object.assign({}, op, { socketId: socket.id });
     const id = drawingState.addOperation(base);
+    console.log(`[Server] stroke-start: assigned id=${id}, tempId=${op.tempId}, broadcasting to all clients`);
     // broadcast with assigned id
     io.emit('stroke-start', { ...base, id });
   });
@@ -67,9 +68,13 @@ io.on('connection', (socket) => {
   socket.on('stroke-points', (data) => {
     // data: {id, points}
     // persist points into server state so history is complete
+    console.log(`[Server] stroke-points received: id=${data.id}, points count=${data.points ? data.points.length : 0}`);
     try {
       if (data && data.id && Array.isArray(data.points) && data.points.length) {
-        drawingState.appendPoints(data.id, data.points);
+        const success = drawingState.appendPoints(data.id, data.points);
+        if (!success) {
+          console.error(`[Server] Failed to append points for id=${data.id} - operation not found in state`);
+        }
       }
     } catch (err) {
       console.error('Error appending points', err);
@@ -83,11 +88,20 @@ io.on('connection', (socket) => {
     io.emit('clear');
   });
 
+  socket.on('request-sync', () => {
+    // Client requesting full state sync (auto-refresh mechanism)
+    socket.emit('sync', { operations: drawingState.getState() });
+  });
+
   socket.on('stroke-end', (data) => {
     // finalize: contains id and final meta
+    console.log(`[Server] stroke-end received: id=${data.id}`);
     try {
       if (data && data.id) {
-        drawingState.updateOperation(data.id, data);
+        const success = drawingState.updateOperation(data.id, data);
+        if (!success) {
+          console.error(`[Server] Failed to update operation id=${data.id} - not found in state`);
+        }
       }
     } catch (err) {
       console.error('Error finalizing operation', err);
@@ -114,6 +128,19 @@ io.on('connection', (socket) => {
     users.delete(socket.id);
     socket.broadcast.emit('user-left', { socketId: socket.id });
   });
+});
+
+server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`\n❌ Port ${PORT} is already in use!`);
+    console.error(`To fix this, either:`);
+    console.error(`  1. Stop the process using port ${PORT} (check with: netstat -aon | findstr :${PORT})`);
+    console.error(`  2. Or run with a different port: $env:PORT=4000; node server/server.js\n`);
+    process.exit(1);
+  } else {
+    console.error('Server error:', err);
+    process.exit(1);
+  }
 });
 
 server.listen(PORT, () => {

@@ -122,22 +122,31 @@
 
   socket.on('init', (payload) => {
     // payload: {operations, users, you}
-    // If there are no other users connected, start with a clear canvas for a clean default.
     usersEl.innerHTML = '';
     usersMap.clear();
     payload.users.forEach(u => usersMap.set(u.id, u));
     renderUsers();
-    // If only this user is present, prefer a clean canvas rather than replaying old operations
-    if (!payload.users || payload.users.length <= 1) {
-      if (window.CanvasAPI && window.CanvasAPI.onClear) {
-        window.CanvasAPI.onClear();
-      } else if (window.CanvasAPI && window.CanvasAPI.init) {
-        // fallback: initialize with empty operations
-        window.CanvasAPI.init({ operations: [] });
-      }
-    } else {
-      // multiple users — load shared state
-      window.CanvasAPI.init(payload);
+    // Always load server state so drawings persist across refreshes
+    // (If you want to start fresh, use the Clear button in the topbar)
+    window.CanvasAPI.init(payload);
+    
+    // Auto-sync: periodically request fresh state from server to catch any missed updates
+    // This ensures the canvas stays in sync even if some messages are lost
+    if (!window._autoSyncInterval) {
+      window._autoSyncInterval = setInterval(() => {
+        if (window.socketClient && window.socketClient.connected) {
+          window.socketClient.emit('request-sync');
+        }
+      }, 5000); // sync every 5 seconds
+    }
+  });
+
+  // Handle sync response from server
+  socket.on('sync', (payload) => {
+    // payload: {operations}
+    // Only update if we're missing operations (avoid unnecessary redraws)
+    if (window.CanvasAPI && window.CanvasAPI.sync) {
+      window.CanvasAPI.sync(payload.operations);
     }
   });
 
